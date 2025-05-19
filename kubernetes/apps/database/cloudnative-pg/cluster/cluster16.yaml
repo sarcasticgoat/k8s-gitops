@@ -1,0 +1,69 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/postgresql.cnpg.io/cluster_v1.json
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: postgres16
+spec:
+  instances: 3
+  imageName: ghcr.io/cloudnative-pg/postgresql:16.3-3
+  primaryUpdateStrategy: unsupervised
+  storage:
+    size: 20Gi
+    storageClass: openebs-hostpath
+  enableSuperuserAccess: true
+  postgresql:
+    parameters:
+      max_connections: "400"
+      shared_buffers: 256MB
+  nodeMaintenanceWindow:
+    inProgress: false
+    reusePVC: true
+  superuserSecret:
+    name: cloudnative-pg-secret
+  resources:
+    requests:
+      cpu: 200m
+    limits:
+      memory: 4Gi
+  monitoring:
+    enablePodMonitor: true
+    # see https://github.com/cloudnative-pg/cloudnative-pg/issues/2501
+    podMonitorMetricRelabelings:
+      - sourceLabels: ["cluster"]
+        targetLabel: cnpg_cluster
+        action: replace
+      - regex: cluster
+        action: labeldrop
+  backup:
+    retentionPolicy: 30d
+    barmanObjectStore: &barmanObjectStore
+      endpointURL: http://${NAS_IP}:9000
+      s3Credentials:
+        accessKeyId:
+          name: cloudnative-pg-secret
+          key: aws-access-key-id
+        secretAccessKey:
+          name: cloudnative-pg-secret
+          key: aws-secret-access-key
+      destinationPath: s3://cloudnative-pg/
+      data:
+        compression: bzip2
+      wal:
+        compression: bzip2
+        maxParallel: 8
+      # NOTE: serverName version needs to be incremented
+      # when recovering from an existing cnpg cluster
+      serverName: &currentCluster postgres16-v1
+# NOTE: previousCluster needs to be set to the name of the previous
+# cluster when recovering from an existing cnpg cluster
+  bootstrap:
+    recovery:
+      backup:
+        name: postgres-20250517000000
+# NOTE: externalClusters is needed when recovering from an existing cnpg cluster
+# externalClusters:
+#   - name: *previousCluster
+#     barmanObjectStore:
+#       <<: *barmanObjectStore
+#       serverName: *previousCluster
