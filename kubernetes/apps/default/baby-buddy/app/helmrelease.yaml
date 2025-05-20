@@ -1,0 +1,121 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/refs/heads/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app baby-buddy
+  namespace: default
+spec:
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  install:
+    timeout: 10m
+    replace: true
+    crds: CreateReplace
+    createNamespace: true
+    remediation:
+      retries: 3
+
+  upgrade:
+    remediation:
+      remediateLastFailure: true
+      retries: 3
+      strategy: rollback
+    cleanupOnFail: true
+    crds: CreateReplace
+
+  test:
+    enable: true
+
+  rollback:
+    recreate: true
+    force: true
+    cleanupOnFail: true
+
+  uninstall:
+    keepHistory: false
+
+  maxHistory: 1
+
+  values:
+
+    controllers:
+      baby-buddy:
+        enabled: true
+        type: deployment
+        annotations:
+          reloader.stakater.com/auto: "true"
+        replicas: 1
+        containers:
+          app:
+            image:
+              repository: lscr.io/linuxserver/babybuddy
+              tag: 2.7.1@sha256:532145f2f429be2b7494d764ab082f7aed0ec1926b3519bb9710c61eaa7530eb
+              pullPolicy: IfNotPresent
+            env:
+              - name: TZ
+                value: ${TIMEZONE}
+              - name: DJANGO_SETTINGS_MODULE
+                value: babybuddy.settings.base
+              - name: DB_ENGINE
+                value: django.db.backends.postgresql
+              - name: DB_HOST
+                value: postgres16-rw.database.svc.cluster.local.
+              - name: DB_NAME
+                value: babybuddy
+              - name: DB_USER
+                valueFrom:
+                  secretKeyRef:
+                    name: baby-buddy-secret
+                    key: PG_USERNAME
+              - name: DB_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: baby-buddy-secret
+                    key: PG_PASSWORD
+            envFrom:
+              - secretRef:
+                  name: baby-buddy-secret
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+
+            # probes:
+            #   liveness:
+            #     enabled: true
+            #   readiness:
+            #     enabled: true
+            #   startup:
+            #     enabled: true
+            #     spec:
+            #       failureThreshold: 30
+            #       periodSeconds: 5
+
+    service:
+      app:
+        controller: *app
+        ports:
+          http:
+            port: &port 8000
+
+    route:
+      app:
+        hostnames: ["{{ .Release.Name }}.${SECRET_DOMAIN}"]
+        parentRefs:
+          - name: internal
+            namespace: kube-system
+            sectionName: https
+        rules:
+          - backendRefs:
+              - name: *app
+                port: *port
+
+    persistence:
+      config:
+        enabled: true
+        existingClaim: baby-buddy
+        globalMounts:
+          - path: /config
