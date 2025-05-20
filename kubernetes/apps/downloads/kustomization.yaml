@@ -2,9 +2,13 @@
 # yaml-language-server: $schema=https://json.schemastore.org/kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-namespace: default
+namespace: downloads
 components:
   - ../../components/common
 resources:
-  - ./baby-buddy/ks.yaml
-  - ./echo/ks.yaml
+  # Flux-Kustomizations
+  - ./prowlarr/ks.yaml
+  - ./radarr/ks.yaml
+  - ./recyclarr/ks.yaml
+  - ./sabnzbd/ks.yaml
+  - ./sonarr/ks.yaml
