@@ -4,6 +4,7 @@
     "config:recommended",
     "docker:enableMajor",
     "helpers:pinGitHubActionDigests",
+    "github>sarcasticgoat/k8s-gitops//.github/workflows/autoMerge.json5",
     ":automergeBranch",
     ":dependencyDashboard",
     ":disableRateLimiting",
