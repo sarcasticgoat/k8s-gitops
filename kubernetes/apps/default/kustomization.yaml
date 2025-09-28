@@ -7,4 +7,3 @@ components:
   - ../../components/common
 resources:
   - ./baby-buddy/ks.yaml
-  - ./echo/ks.yaml
