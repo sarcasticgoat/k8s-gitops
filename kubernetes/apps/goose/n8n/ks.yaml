@@ -4,7 +4,7 @@ apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: &app n8n
-  namespace: &namespace goose
+  namespace: flux-system
 spec:
   commonMetadata:
     labels:
@@ -28,6 +28,6 @@ spec:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  targetNamespace: *namespace
+  targetNamespace: goose
   timeout: 5m
   wait: false
