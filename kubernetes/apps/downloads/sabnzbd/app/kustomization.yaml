@@ -9,3 +9,6 @@ generatorOptions:
   disableNameSuffixHash: true
   annotations:
     kustomize.toolkit.fluxcd.io/substitute: disabled
+
+commonLabels:
+  storage.dependency/nfs: "true"
