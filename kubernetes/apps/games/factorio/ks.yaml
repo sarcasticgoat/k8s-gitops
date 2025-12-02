@@ -1,0 +1,32 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app factorio-vanilla
+  namespace: games
+
+spec:
+  targetNamespace: games
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  path: ./kubernetes/apps/games/factorio/vanilla
+  prune: true
+  wait: false
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  interval: 30m
+  dependsOn:
+    - name: rook-ceph-cluster
+      namespace: rook-ceph
+  retryInterval: 1m
+  timeout: 3m
+  postBuild:
+    substitute:
+      APP: *app
+      VOLSYNC_CAPACITY: 2Gi
+    substituteFrom:
+      - name: cluster-secrets
+        kind: Secret
