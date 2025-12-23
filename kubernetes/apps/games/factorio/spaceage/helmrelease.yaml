@@ -64,6 +64,13 @@ spec:
             app:
               - path: /factorio
                 subPath: factorio
+      helmconfig:
+        enabled: true
+        type: nfs
+        server: ${NAS_IP}
+        path: /zpool-mirror/backups/games/factorio
+        globalMounts:
+          - path: /helmconfig
 
     startupProbe:
       enabled: true
