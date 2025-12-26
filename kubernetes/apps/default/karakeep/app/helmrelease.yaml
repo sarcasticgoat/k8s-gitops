@@ -67,7 +67,7 @@ spec:
           app:
             image:
               repository: gcr.io/zenika-hub/alpine-chrome
-              tag: 124@sha256:1a0046448e0bb6c275c88f86e01faf0de62b02ec8572901256ada0a8c08be23f
+              tag: 124@sha256:07776d4f77292b8adcf12afc9bc8043a363b8243977fb204980ae911633b08ba
             command:
               - chromium-browser
             args:
