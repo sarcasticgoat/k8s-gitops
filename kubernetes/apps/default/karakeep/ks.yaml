@@ -20,7 +20,7 @@ spec:
   postBuild:
     substitute:
       APP: karakeep
-      VOLSYNC_CLAIM: karakeep-data
+      VOLSYNC_CLAIM: karakeep
     substituteFrom:
       - name: cluster-secrets
         kind: Secret
