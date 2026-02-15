@@ -52,7 +52,7 @@ spec:
           app:
             image:
               repository: lscr.io/linuxserver/babybuddy
-              tag: 2.7.1@sha256:532145f2f429be2b7494d764ab082f7aed0ec1926b3519bb9710c61eaa7530eb
+              tag: 2.7.1@sha256:900f5b6ab9d41e869ffb6761900c0da9f23d6d5ffd55215265671028405e485c
               pullPolicy: IfNotPresent
             env:
               - name: TZ
