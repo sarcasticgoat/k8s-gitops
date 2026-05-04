@@ -105,7 +105,7 @@ spec:
       media:
         type: nfs
         server: ${NAS_IP}
-        path: /zpool-mirror/data/media
+        path: /mnt/user/data/media
         globalMounts:
           - path: /data/media
       tmp:

@@ -68,7 +68,7 @@ spec:
         enabled: true
         type: nfs
         server: ${NAS_IP}
-        path: /zpool-mirror/backups/games/factorio
+        path: /mnt/user/backups/games/factorio
         globalMounts:
           - path: /helmconfig
 
