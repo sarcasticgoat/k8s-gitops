@@ -4,5 +4,6 @@ metadata:
   name: lan
 spec:
   hostname: k8s-router
+  tags: ["tag:k8s"]
   subnetRouter:
     advertiseRoutes: ["192.168.101.1/32", "192.168.101.110/32"]
