@@ -27,7 +27,7 @@ spec:
           app:
             image:
               repository: factoriotools/factorio
-              tag: 2.1.23
+              tag: 2.1.24
             env:
               PORT: &port 34197
               RCON_PORT: &rcon 27015
